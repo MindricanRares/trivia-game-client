@@ -1,36 +1,53 @@
 import React, { Component } from 'react';
+import{slide,scale} from'./../transitions'
 
 class ScoreboardPage extends Component{
     constructor() {
         super();
         this.state = {
-            playerNamesAndScore: [{
-                    name: 'ABC',
-                    score: '100'
-                },
-                {
-                    name: 'DEF',
-                    score: '250'
-                },
-                {
-                    name: 'GHI',
-                    score: '400'
-                }
-            ]
+            playerNamesAndScore: []
         }
     }
 
-    populatePlayerNameAndScoreList = () =>{
-        return this.state.playerNamesAndScore.map((player)=>{
-            return(<li>{player.name}  {player.score}</li>)
-        }) 
+    getPlayerNameAndScore = () => {
+        var request = require("request");
 
-        // let result = [];
-        // for (let i = 0; i < this.state.playerNamesAndScore.length; i++) 
-        //     const player = this.state.playerNamesAndScore[i];
-        //     result.push(<li>{player.name}</li>)
-        // }
-        // return result;
+        var options = { method: 'GET',
+        url: 'https://localhost:44343/api/game/4/players/score', 
+      
+        json: true  };
+
+        request(options, function (error, response, body) {
+        if (error) {
+            alert('Refresh')
+        }  else{
+            this.setState({
+                playerNamesAndScore:[].concat(body)
+            })
+        } 
+        console.log(body);
+        }.bind(this))
+
+    }
+    
+    componentWillMount(){
+        this.getPlayerNameAndScore();
+    }
+
+    populatePlayerNameAndScoreList = () =>{
+        const playersSortedByPoints = this.state.playerNamesAndScore.sort(this.compare);
+        return playersSortedByPoints.map((player)=>{
+            return(<div id="playerNameAndScoreDiv">
+                   <div id="playerNameDiv">
+                   <ul ><li>{player.name}</li></ul>
+                   </div>
+                   <div id="playerScoreDiv">
+                   <ul ><li>{player.score}</li></ul>
+                   </div>
+                   </div>
+                 )
+            }
+        ) 
     }
     
     compare = (a, b) => {
@@ -49,11 +66,11 @@ class ScoreboardPage extends Component{
      }
 
      onClickExitHandler = () => {
-        alert("Self destroy initiated!");   
+        alert("ExitHandler");   
      }
 
      onClickRestartHandler = ()=>{
-         var playerNameReady = this.state.playerNamesAndScore[1].name;
+         var playerNameReady = this.state.playerNamesAndScore[0].name;
          var gameRoomCode = "74512";
         
          alert('The game will restart with the following name ' + playerNameReady + ' in gameroom #' + gameRoomCode + '.');
@@ -64,22 +81,27 @@ class ScoreboardPage extends Component{
     render(){
         return(
             <div>
-                <h1>Scoreboard</h1>
-                <br></br>
+                <h1>Woobaluba-dub-dub</h1>
                 <br></br>
                
-               <h3>Player List</h3>
-                <ul >
+               
+               <h2>Final Score</h2>
+                 
                     {this.populatePlayerNameAndScoreList()}
-                </ul>
+               
                 
                 <br></br>           
                 <br></br>    
                 <button onClick={this.onClickStatisticsHandler}>Statistics</button>
-                 <br></br>  <br></br> 
+                <br></br><br></br> 
                 <button onClick={this.onClickRestartHandler}>Restart</button>
-                 <br></br>  <br></br> 
-                <button onClick={this.onClickExitHandler}>Exit</button>
+                <br></br><br></br> 
+                <button onClick={()=> this.props.history.push({pathname:"/components/StartPage",state:scale})}>Exit</button>
+                <br></br><br></br>
+                <button onClick={()=> this.props.history.push({pathname:"/components/GameRoomPage",state:scale})}>GameRoom</button>
+                <br></br><br></br>
+                <button onClick={()=> this.props.history.push({pathname:"/components/QuestionPage",state:scale})}>Questions</button>
+                <br></br>
             </div>
         );
     }

@@ -1,28 +1,12 @@
 import React, { Component } from 'react';
-import ScoreboardPage from './ScoreboardPage';
-//import {BrowserRouter as Redirect,Router, Route} from "react-router-dom";
-import { Redirect } from 'react-router'
+import { slide, scale } from './../transitions'
+
+
 class QuestionPage extends Component{
     constructor() {
         super();
         this.state = {
-            questions: [{
-                    questionText: "Sta rares inca putin astazi?",
-                    correctAnswer: "Da",
-                    wrongAnswer1: "Nu",
-                    wrongAnswer2: "Poate ",
-                    wrongAnswer3: "Nu are de ales "
-                },
-
-                {
-                    questionText: "Radu este intr-o pauza continua?",
-                    correctAnswer: "DA",
-                    wrongAnswer1: "sigur nu",
-                    wrongAnswer2: "nu",
-                    wrongAnswer3: "nu are de ales"
-
-                }
-            ],
+            questions:[],
             currentQuestionNr: 0,
             wrongButtonStyle:"",
             correctButtonStyle:"",
@@ -32,8 +16,33 @@ class QuestionPage extends Component{
         }
     }
 
+    getQuestionsFromDB = () => {
+        var request = require("request");
+
+        var options = { method: 'GET',
+        url: 'https://localhost:44343/api/game/4/questions', 
+      
+        json: true  };
+
+        request(options, function (error, response, body) {
+        if (error) {
+            alert('Refresh')
+        }  else{
+            this.setState({
+                questions:[].concat(body)
+            },()=>{
+                console.log(this.state.questions);
+                this.timerFunctionForAnswers();
+            });
+              
+        } 
+        console.log(body);
+        }.bind(this))
+
+    }
+
     componentWillMount(){
-        this.timerFunctionForAnswers()
+        this.getQuestionsFromDB();
     }
 
    shuffleArray = (array) => {
@@ -50,6 +59,7 @@ class QuestionPage extends Component{
 
     createAnswersArray = () => {
         let answersArray = [];
+        
         answersArray.push({isCorrectAnswer:true,answer:this.state.questions[this.state.currentQuestionNr].correctAnswer});
         answersArray.push({isCorrectAnswer:false,answer:this.state.questions[this.state.currentQuestionNr].wrongAnswer1});
         answersArray.push({isCorrectAnswer:false,answer:this.state.questions[this.state.currentQuestionNr].wrongAnswer2});
@@ -60,13 +70,14 @@ class QuestionPage extends Component{
 
   
     populateQuestions = () => {
-        
         return this.state.questionAnswers.map((question)=>{
             if(question.isCorrectAnswer===true){
-                return <li><button value=""className={this.state.correctButtonStyle} onClick= {this.onClickCorrectAnswerBtnHandler}>{question.answer}</button></li>
+                return <li id="answersButtonList">
+                <button value="" className={this.state.correctButtonStyle} id="answersButtons" onClick= {this.onClickCorrectAnswerBtnHandler}>{question.answer}
+                </button></li>
             }
-
-            return <li><button className={this.state.wrongButtonStyle} onClick={this.onClickWrongAnswerBtnHandler}>{question.answer}</button></li>
+            return <li id="answersButtonList"><button id="answersButtons" className={this.state.wrongButtonStyle} onClick={this.onClickWrongAnswerBtnHandler}>{question.answer}</button>
+            </li>
         })
     }
 
@@ -74,7 +85,6 @@ class QuestionPage extends Component{
         this.setState({
             correctButtonStyle:"correctAnswer"
         })
-
     }
 
     onClickWrongAnswerBtnHandler =()=>{
@@ -115,7 +125,7 @@ class QuestionPage extends Component{
                     this.setState({
                         redirectToScoreboard:true
                     })
-                    // return (<Redirect push to="/components/ScoreboardPage"/>);
+                   this.props.history.push({ pathname: "/components/ScoreboardPage", state: scale });
                 }
                 else {
                 this.hideAnswersHandler();
@@ -129,37 +139,34 @@ class QuestionPage extends Component{
                     })  
                     this.timerFunctionForAnswers()
                 });}
-
             }
-            
-          
         }, 1000);
     }
 
+
     render(){
-        if (this.state.redirectToScoreboard) {
-            return <Redirect to="/components/ScoreboardPage" />
-          }
+        if(this.state.questions.length===0){
+            return(
+                <p>Loading</p>
+            )
+        }
         return(
             <div>
                 <h1>Trivia Game</h1>
-                <br></br>
-                <br></br>
-                <p>{this.state.questions[this.state.currentQuestionNr].questionText}</p>
-                <br></br>
+                <br/>
+                <br/>
+                <p id="questionTextParagraph">{this.state.questions[this.state.currentQuestionNr].questionText}</p>
+                
                   <ul>
                     {this.populateQuestions()}
                   </ul>
-                
-                <br></br>    
+                <br/><br/>
+               
                 <button onClick={this.onClickHandler}>OK</button>
               <p></p>
               <p>Time remaining: {this.state.timeRemaining}</p>
-              {/* <Route path="/components/ScoreboardPage" component={ScoreboardPage} /> */}
             </div>
         );
     }
-
 }
-
 export default QuestionPage;

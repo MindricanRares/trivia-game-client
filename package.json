@@ -3,18 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.1.0",
+    "animated": "^0.2.2",
+    "bad-words": "^1.6.3",
+    "classnames": "^2.2.6",
     "jest": "^23.5.0",
+    "material-ui": "^0.20.2",
+    "profane-words": "^0.2.4",
+    "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
-    "shuffle-array": "^1.0.1"
+    "react-transition-group": "^2.4.0",
+    "request": "^2.88.0",
+    "shuffle-array": "^1.0.1",
+    "styled-components": "^3.4.5",
+    "testcafe": "^0.22.0",
+    "typeface-roboto": "0.0.54"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "uitest": "testcafe chrome  src/tests/*uitest* --app \"npm start\""
   }
 }

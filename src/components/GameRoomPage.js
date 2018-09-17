@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import{slide,scale} from'./../transitions'
 
 class GameRoomPage extends Component{
     constructor() {
@@ -89,7 +90,10 @@ class GameRoomPage extends Component{
                 
                 <br></br>           
                 <br></br>    
-                <button onClick={this.onClickReadyHandler}>Ready</button>
+                <button onClick={this.onClickReadyHandler}>Ready</button><br></br><br></br>
+                <button onClick={()=> this.props.history.push({pathname:"/components/QuestionPage",state:scale})}>QuestionPage</button><br></br><br></br>
+                <button onClick={()=> this.props.history.push({pathname:"/components/ScoreboardPage",state:scale})}>Scoreboard</button><br></br><br></br>
+                <button onClick={()=> this.props.history.push({pathname:"/components/StartPage",state:scale})}>Start</button>
             </div>
         );
     }
