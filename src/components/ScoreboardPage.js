@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import{slide,scale} from'./../transitions'
+import{scale} from'./../transitions'
 
 class ScoreboardPage extends Component{
     constructor() {

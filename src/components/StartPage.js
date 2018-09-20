@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import{slide,scale} from'./../transitions'
+//import{slide,scale} from'./../transitions'
 import {badWords} from '../utils/profanityFilter';
 import {ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
-import TextField from '@material-ui/core/TextField';
+
 import Button from '@material-ui/core/Button';
 
-var Filter = require('bad-words'),
-    filter = new Filter();
+
 
 class StartPage extends Component{
     constructor(){
@@ -42,11 +41,6 @@ class StartPage extends Component{
         this.setState({code: e.target.value})
     }
 
-    isGameRoomCodeEmpty = ()=>{
-        if(this.state.code.length===0){
-            alert('please input gameroom code');
-        }
-    }
 
     onClickHandler=()=>{
         this.setState({
@@ -61,13 +55,10 @@ class StartPage extends Component{
 
     
     render(){
-      
         return(
         <ValidatorForm onSubmit={this.onSubmitHandler}>
-          
              <h1>Trivia Game</h1>
              <br/><br/>
-             
                 <TextValidator label="Name" onChange={this.onChangeNameHandler} name="Name" 
                    validators={['isProfanity','minStringLength:3','maxStringLength:10','required']} 
                    autoComplete="off" autoCorrect="off"
@@ -82,15 +73,14 @@ class StartPage extends Component{
                    errorMessages={['Use only 0-9 characters.',"You cannot use a negative number.",'Code is too short.','Code is too long.','This field is required']}>
                 </TextValidator>
 
-             
                 <br/><br/>         
                 
-                <Button  type="submit"  disabled={this.state.isReadyDisabled} variant="outlined" color="primary" size="large" onClick={this.onClickHandler}>
+                <Button  type="submit"  disabled={this.state.isReadyDisabled} variant="outlined" 
+                    color="primary" size="large" onClick={this.onClickHandler}>
                     {this.state.isReadyDisabled.toString()}
-                </Button><br/><br/>
-               
+                </Button>
+                <br/><br/>
                 <p>{this.state.isReadyDisabled.toString()}</p>
-                
             </ValidatorForm>
         );
     }

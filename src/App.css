@@ -13,7 +13,10 @@ ul {
 
 }
 /* input types styling */
-
+#alert-dialog-description{
+  font-size: 200%;
+  font-weight: bold;
+}
 /* -------------------------------------*/
 /* scoreboard player list and score styling */
 #playerNameAndScoreDiv{
