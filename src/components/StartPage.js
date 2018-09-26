@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-//import{slide,scale} from'./../transitions'
+import{scale} from'./../transitions'
 import {badWords} from '../utils/profanityFilter';
 import {ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
-
 import Button from '@material-ui/core/Button';
 
+ 
 
 
 class StartPage extends Component{
@@ -31,6 +31,27 @@ class StartPage extends Component{
         });
     }
 
+    loadPlayerIntoGameroom=()=>{
+        var request = require("request");
+
+        var options = { method: 'POST',
+          url: 'https://localhost:44343/api/player',
+          headers: 
+           { 'Content-Type': 'application/json' },
+          body: {
+               playername: this.state.name, 
+               gameroomid: this.state.code, 
+               playerscore: 0 },
+          json: true };
+        
+        request(options, function (error, response, body) {
+          if (error) throw new Error(error);
+        
+          console.log(body);
+        });
+
+    }
+
     onChangeNameHandler = (e) => {
       this.setState({
          name: e.target.value
@@ -46,10 +67,15 @@ class StartPage extends Component{
         this.setState({
             readyMessage:"it worked"
          })
+         
     }
+    
     onSubmitHandler=()=>{
         this.setState({
             isReadyDisabled:true,
+         },()=>{
+           // this.loadPlayerIntoGameroom();
+            this.props.history.push({pathname:"/components/GameRoomPage",state:scale})
          })
     }
 
@@ -72,15 +98,21 @@ class StartPage extends Component{
                    value={this.state.code}
                    errorMessages={['Use only 0-9 characters.',"You cannot use a negative number.",'Code is too short.','Code is too long.','This field is required']}>
                 </TextValidator>
+                <br/><br/><br/>   
 
-                <br/><br/>         
-                
-                <Button  type="submit"  disabled={this.state.isReadyDisabled} variant="outlined" 
-                    color="primary" size="large" onClick={this.onClickHandler}>
-                    {this.state.isReadyDisabled.toString()}
+                <div id="startPageButtonsContainer">
+                <Button  type="submit"  disabled={this.state.isReadyDisabled} variant="contained"  
+                    color="primary" size="large" onClick={this.onClickHandler}
+                >join a gameroom
+                </Button>
+                <br/><h3>OR</h3>
+                <Button variant="contained" color="primary" size="large"  
+                onClick={()=> this.props.history.push({pathname:"/components/GameRoomPage",state:scale})}
+                >Create gameroom
                 </Button>
                 <br/><br/>
-                <p>{this.state.isReadyDisabled.toString()}</p>
+               
+                </div>
             </ValidatorForm>
         );
     }

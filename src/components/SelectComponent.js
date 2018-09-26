@@ -17,7 +17,7 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     height: 60,
-    width:400,
+    width:280,
     margin:'auto',
     alignItems: 'center',
   },

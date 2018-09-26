@@ -6,11 +6,18 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import CopyToClipboard from "react-copy-to-clipboard";
 import Slide from '@material-ui/core/Slide';
 import IntegrationReactSelect from './SelectComponent';
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
+}
+
+const copiedStyle ={
+  background:'green'
+}
+const notCopiedStyle={
 }
 
 class GameRoomPage extends Component{
@@ -20,11 +27,38 @@ class GameRoomPage extends Component{
             gameRoomCode: '',
             categoriesToChooseFrom: [], 
             categoriesChosen: [],
-            selectedCategory: "math",
             isDialogOpen:false,
             selectedCategories:[],
             isCreateBtnDisabled:true,
+            copyBtnText:'Copy code',
+            isCopied:false,
+            
         }
+    }
+    drawCopyButton=()=>{
+        if(this.state.isCopied === true){
+            return (  <Button id="copyButton"
+            onClick={this.copyBtnClickHandler} style={copiedStyle}
+            variant="contained" color="primary" fullWidth 
+           >
+             {this.state.copyBtnText}
+           </Button>)
+        }
+        else{
+            return(<Button id="copyButton"
+            onClick={this.copyBtnClickHandler} style={notCopiedStyle}
+            variant="contained" color="primary" fullWidth 
+           >
+             {this.state.copyBtnText}
+           </Button>)
+        }
+    }
+
+    copyBtnClickHandler=()=>{
+        this.setState({
+              copyBtnText:"Copied!",
+              isCopied:true, 
+          })
     }
 
     updateToSelectedCategory=(e)=>{
@@ -52,7 +86,23 @@ class GameRoomPage extends Component{
         } 
         console.log(body);
         }.bind(this))
-     
+    }
+
+    sendGamecodeToServer=(gameRoomCode)=>{
+        var request = require("request");
+
+        var options = { method: 'POST',
+          url: 'https://localhost:44343/api/game/',
+          headers: 
+           { 'Content-Type': 'application/json' },
+          body: { UniqueKey: gameRoomCode },
+          json: true };
+        
+        request(options, function (error, response, body) {
+          if (error) throw new Error(error);
+          console.log(body);
+        });
+
     }
 
     componentWillMount(){
@@ -62,32 +112,21 @@ class GameRoomPage extends Component{
     handleClickOpen = () => {
         this.setState({ isDialogOpen: true });
         this.generateRandomGameCode();
+      
     };
     
     handleClose = () => {
         this.setState({ isDialogOpen: false });
     };
 
-    copyToClipboard = (e) => {
-        this.dialogcontexttext.select();
-        document.execCommand('copy');
-        e.target.focus();
-    };
 
     generateRandomGameCode=()=>{
-        var generatedCode=Math.floor(10000 + Math.random() * 90000);
-        this.setState({
-            gameRoomCode:generatedCode,
-         })
-    }
-       
-    checkRandom=()=>{
-      console.log(
-        Math.floor(10000 + Math.random() * 90000)
-      );
+     var generatedCode=Math.floor(10000 + Math.random() * 90000);
+     this.setState({
+         gameRoomCode:generatedCode,
+      },this.sendGamecodeToServer(generatedCode))
     }
 
- 
     isCategoriesArrayEmpty=()=>{
         if (this.state.selectedCategories.length !== 0){
             this.setState({
@@ -110,12 +149,13 @@ class GameRoomPage extends Component{
                                         updateToSelectedCategory={(e)=>this.updateToSelectedCategory(e)}>
                 </IntegrationReactSelect>
                 <br/>          
-                <br/>  
+                <br/> <br/><br/> 
                 
-                <Button type="submit" disabled={this.state.isCreateBtnDisabled} variant="contained" color="primary" onClick={this.handleClickOpen}>
+                <Button type="submit" disabled={this.state.isCreateBtnDisabled} variant="contained"
+                 color="primary" onClick={this.handleClickOpen}>
                  Create gameroom
                 </Button>
-                <p>{this.state.isCreateBtnDisabled.toString()}</p>
+               
                 <Dialog
                    open={this.state.isDialogOpen}
                    onClose={this.handleClose}
@@ -133,27 +173,20 @@ class GameRoomPage extends Component{
                      </DialogContentText>
                    </DialogContent>
                    <DialogActions>
-                     <Button onClick={this.copyCodeToClipboard} variant="contained" color="primary">
-                       Copy code
-                     </Button>
+
+                    <CopyToClipboard text={this.state.gameRoomCode}>
+                      {this.drawCopyButton()}
+                    </CopyToClipboard>
+
                      <Button onClick={this.handleClose} autoFocus variant="contained" color="secondary">
                        Close
                      </Button>
                    </DialogActions>
                 </Dialog>
-                 
-                <br/><br/>
-                <Button variant="contained" color="primary"  onClick={this.checkRandom}>Check log</Button><br/><br/>
-                <Button variant="contained" color="primary" 
-                 onClick={()=> this.props.history.push({pathname:"/components/QuestionPage",state:scale})}>QuestionPage
-                 </Button>
+
                 <br/><br/>
                 <Button variant="contained" color="primary" 
-                onClick={()=> this.props.history.push({pathname:"/components/ScoreboardPage",state:scale})}>Scoreboard
-                </Button>
-                <br/><br/>
-                <Button variant="contained" color="primary" 
-                onClick={()=> this.props.history.push({pathname:"/components/StartPage",state:scale})}>Start
+                     onClick={()=> this.props.history.push({pathname:"/components/StartPage",state:scale})}>&nbsp; Go to start page
                 </Button>
             </div>
         );

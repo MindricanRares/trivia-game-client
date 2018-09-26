@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { scale } from './../transitions'
-
+import Button from "@material-ui/core/Button";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import purple from '@material-ui/core/colors/purple';
 
 class QuestionPage extends Component{
     constructor() {
@@ -12,18 +14,19 @@ class QuestionPage extends Component{
             correctButtonStyle:"",
             timeRemaining: 5,
             questionAnswers:[],
-            redirectToScoreboard:false
+            redirectToScoreboard:false,
+            correctButtonColor:"primary",
+            wrongButtonColor:"primary",
+            playerScore:0,
+            timerInfoText:"Time remaining to answer",
         }
     }
 
     getQuestionsFromDB = () => {
         var request = require("request");
-
         var options = { method: 'GET',
         url: 'https://localhost:44343/api/game/4/questions', 
-      
         json: true  };
-
         request(options, function (error, response, body) {
         if (error) {
             alert('Refresh')
@@ -33,12 +36,10 @@ class QuestionPage extends Component{
             },()=>{
                 console.log(this.state.questions);
                 this.timerFunctionForAnswers();
-            });
-              
+            });  
         } 
         console.log(body);
         }.bind(this))
-
     }
 
     componentWillMount(){
@@ -54,12 +55,9 @@ class QuestionPage extends Component{
        }
        return array;
    }
-         
-        
 
     createAnswersArray = () => {
         let answersArray = [];
-        
         answersArray.push({isCorrectAnswer:true,answer:this.state.questions[this.state.currentQuestionNr].correctAnswer});
         answersArray.push({isCorrectAnswer:false,answer:this.state.questions[this.state.currentQuestionNr].wrongAnswer1});
         answersArray.push({isCorrectAnswer:false,answer:this.state.questions[this.state.currentQuestionNr].wrongAnswer2});
@@ -73,38 +71,57 @@ class QuestionPage extends Component{
         return this.state.questionAnswers.map((question)=>{
             if(question.isCorrectAnswer===true){
                 return <li id="answersButtonList">
-                <button value="" className={this.state.correctButtonStyle} id="answersButtons" onClick= {this.onClickCorrectAnswerBtnHandler}>{question.answer}
-                </button></li>
+                <Button variant="contained" color={this.state.correctButtonColor} size="large"
+                 value="" className={this.state.correctButtonStyle} id="answersButtons" 
+                 onClick= {this.onClickCorrectAnswerBtnHandler}>{question.answer}
+                </Button></li>
             }
-            return <li id="answersButtonList"><button id="answersButtons" className={this.state.wrongButtonStyle} onClick={this.onClickWrongAnswerBtnHandler}>{question.answer}</button>
+            return <li id="answersButtonList">
+                <Button variant="contained" id="answersButtons" color={this.state.wrongButtonColor}
+                  className={this.state.wrongButtonStyle} size="large"
+                  onClick={this.onClickWrongAnswerBtnHandler}>{question.answer}
+                </Button>
             </li>
         })
     }
 
-    onClickCorrectAnswerBtnHandler =()=>{
-        this.setState({
-            correctButtonStyle:"correctAnswer"
-        })
+    onClickCorrectAnswerBtnHandler =()=>{ 
+        this.setState((prevState)=>({
+            correctButtonStyle:"disableAnswer",
+            correctButtonColor:"primary",
+            wrongButtonColor:"secondary",
+            wrongButtonStyle:"disableAnswer",
+            playerScore: prevState.playerScore + 10 * prevState.timeRemaining,
+        }))
+        
     }
 
     onClickWrongAnswerBtnHandler =()=>{
       this.setState({
-          wrongButtonStyle:"wrongAnswer",
-          correctButtonStyle:"correctAnswer"
+          wrongButtonStyle:"disableAnswer",
+          correctButtonStyle:"disableAnswer",
+          correctButtonColor:"primary",
+          wrongButtonColor:"secondary",
       })
     }
 
     revealAnswersHandler = () =>{
         this.setState({
-            wrongButtonStyle:"wrongAnswer",
-            correctButtonStyle:"correctAnswer"
+            wrongButtonStyle:"disableAnswer",
+            correctButtonStyle:"disableAnswer",
+            correctButtonColor:"primary",
+            wrongButtonColor:"secondary",
+            timerInfoText:"Next question in "
+
         })
     }
 
     hideAnswersHandler = () =>{
         this.setState({
             wrongButtonStyle:"",
-            correctButtonStyle:""
+            correctButtonStyle:"",
+            correctButtonColor:"primary",
+            wrongButtonColor:"primary"
         })
     }
    
@@ -131,6 +148,7 @@ class QuestionPage extends Component{
                 this.hideAnswersHandler();
                 this.setState((prevState) => ({
                     currentQuestionNr: prevState.currentQuestionNr+1,
+                    timerInfoText:"Time remaining to answer",
                     timeRemaining : 5  ,
                     questionAnswers:this.createAnswersArray()
                   }),()=>{
@@ -147,24 +165,24 @@ class QuestionPage extends Component{
     render(){
         if(this.state.questions.length===0){
             return(
-                <p>Loading</p>
+                <div><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                    <CircularProgress  style={{ color: purple[500] }} thickness={6}  size={60} /><br/>
+                    <p>Loading questions from server</p>
+                </div>
             )
         }
         return(
             <div>
                 <h1>Trivia Game</h1>
                 <br/>
-                <br/>
+                <p>Your score: {this.state.playerScore}</p>
                 <p id="questionTextParagraph">{this.state.questions[this.state.currentQuestionNr].questionText}</p>
                 
                   <ul>
                     {this.populateQuestions()}
                   </ul>
                 <br/><br/>
-               
-                <button onClick={this.onClickHandler}>OK</button>
-              <p></p>
-              <p>Time remaining: {this.state.timeRemaining}</p>
+              <p>{this.state.timerInfoText} : {this.state.timeRemaining}</p>
             </div>
         );
     }
