@@ -35,6 +35,7 @@ class GameRoomPage extends Component{
             
         }
     }
+    
     drawCopyButton=()=>{
         if(this.state.isCopied === true){
             return (  <Button id="copyButton"
@@ -64,13 +65,14 @@ class GameRoomPage extends Component{
     updateToSelectedCategory=(e)=>{
         this.setState({
             selectedCategories:e,
+            
         },this.isCategoriesArrayEmpty);
     }
 
     getAvailableCategories = () => {
         var request = require("request");
         var options = { method: 'GET',
-        url: 'https://localhost:44343/api/category', 
+        url: 'http://10.180.186.100:8080/api/category', 
         json: true  };
 
         request(options, function (error, response, body) {
@@ -81,6 +83,7 @@ class GameRoomPage extends Component{
                 categoriesToChooseFrom:[].concat(body).map(category => ({
                     value: category.categoryName,
                     label: category.categoryName,
+                    categoryId: category.categoryId,
                   }))
             })
         } 
@@ -88,18 +91,40 @@ class GameRoomPage extends Component{
         }.bind(this))
     }
 
+    sendCategoriesToGameroom=(gameId)=>{
+        var request = require("request");
+
+        var options = { method: 'POST',
+          url: 'http://10.180.186.100:8080/api/categorygame',
+          headers: 
+           {'Content-Type': 'application/json' },
+          body: { gameId: gameId, 
+                  categoriesId: this.state.selectedCategories.map((selectedCategory)=>{
+                    return(selectedCategory.categoryId)}
+                  )},
+          json: true };
+        
+        request(options, function (error, response, body) {
+          if (error) throw new Error(error);
+        
+          console.log(body);
+        });
+
+    }
+
     sendGamecodeToServer=(gameRoomCode)=>{
         var request = require("request");
 
         var options = { method: 'POST',
-          url: 'https://localhost:44343/api/game/',
+          url: 'http://10.180.186.100:8080/api/game/',
           headers: 
            { 'Content-Type': 'application/json' },
           body: { UniqueKey: gameRoomCode },
           json: true };
         
-        request(options, function (error, response, body) {
+        request(options,  (error, response, body)=> {
           if (error) throw new Error(error);
+          this.sendCategoriesToGameroom(body.gameId);
           console.log(body);
         });
 
@@ -116,7 +141,7 @@ class GameRoomPage extends Component{
     };
     
     handleClose = () => {
-        this.setState({ isDialogOpen: false });
+        this.setState({ isRestartDialogOpen: false });
     };
 
 
@@ -161,13 +186,13 @@ class GameRoomPage extends Component{
                    onClose={this.handleClose}
                    TransitionComponent={Transition}
                    aria-labelledby="alert-dialog-title"
-                   aria-describedby="alert-dialog-description"
+                   aria-describedby="alert-dialog-description1"
                    maxWidth='md'
                    keepMounted
                     >
                    <DialogTitle id="alert-dialog-title"  > {"Gameroom code"} </DialogTitle>
                    <DialogContent>
-                     <DialogContentText id="alert-dialog-description"
+                     <DialogContentText id="alert-dialog-description1"
                       ref={(dialogcontexttext) => this.DialogContentText = dialogcontexttext} value={this.state.gameRoomCode} >
                        {this.state.gameRoomCode}
                      </DialogContentText>

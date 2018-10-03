@@ -3,9 +3,17 @@ import{scale} from'./../transitions'
 import {badWords} from '../utils/profanityFilter';
 import {ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
 
+function Transition(props) {
+    return <Slide direction="up" {...props} />;
+}
  
-
 
 class StartPage extends Component{
     constructor(){
@@ -13,11 +21,19 @@ class StartPage extends Component{
         this.state = {
             name: '',
             code: '',
-            readyMessage:'',
             isReadyDisabled:false,
-           
+            isDialogOpen: false,
+            playersInGameroom:1, 
         }
     }
+
+    handleClickOpenDialog = () => {
+        this.setState({ isDialogOpen: true });
+    };
+    
+      handleCloseDialog = () => {
+        this.setState({ isDialogOpen: false });
+    };
 
     componentWillMount(){
         ValidatorForm.addValidationRule('isProfanity',(profaneWord)=>{
@@ -31,31 +47,66 @@ class StartPage extends Component{
         });
     }
 
+    checkGameroomIntervalFunction=()=>{
+        var playersCheck = setInterval(() => {
+            if (this.state.playersInGameroom < 2) {
+              this.getNumberOfPlayersInGameroom();
+              
+            }
+            else if(this.state.playersInGameroom >=2){
+              clearInterval(playersCheck);
+              this.handleCloseDialog();
+              this.props.history.push({ pathname: "/components/QuestionPage", state: scale });
+            }   
+        },2000)
+    }
+
+    
+    getNumberOfPlayersInGameroom=()=>{
+        var request = require("request");
+
+        var options = { method: 'GET',
+          url: `http://10.180.186.100:8080/api/game/${this.state.code}/players/number`,
+          headers: 
+           { 'Content-Type': 'application/json' } 
+        };
+        
+        request(options, function (error, response, body) {
+          if (error) {
+            alert('Refresh numberofplayers')
+          }else{
+              this.setState({
+                  playersInGameroom:body
+              })
+            console.log(body);
+          }
+         
+        }.bind(this));
+    }
+
     loadPlayerIntoGameroom=()=>{
         var request = require("request");
 
         var options = { method: 'POST',
-          url: 'https://localhost:44343/api/player',
+          url: 'http://10.180.186.100:8080/api/player',
           headers: 
            { 'Content-Type': 'application/json' },
           body: {
                playername: this.state.name, 
-               gameroomid: this.state.code, 
-               playerscore: 0 },
+               UniqueKey: this.state.code, 
+               },
           json: true };
         
         request(options, function (error, response, body) {
           if (error) throw new Error(error);
-        
+          this.checkGameroomIntervalFunction();
           console.log(body);
-        });
-
+        }.bind(this));
+        
     }
 
     onChangeNameHandler = (e) => {
-      this.setState({
-         name: e.target.value
-      })
+      this.setState({name: e.target.value})
     }
 
     onChangeCodeHandler = (e) => {
@@ -64,22 +115,18 @@ class StartPage extends Component{
 
 
     onClickHandler=()=>{
-        this.setState({
-            readyMessage:"it worked"
-         })
-         
+   
+    this.loadPlayerIntoGameroom();
+    this.props.setPlayerNameAndGameroom(this.state.name,this.state.code);
     }
     
     onSubmitHandler=()=>{
         this.setState({
             isReadyDisabled:true,
-         },()=>{
-           // this.loadPlayerIntoGameroom();
-            this.props.history.push({pathname:"/components/GameRoomPage",state:scale})
          })
+      this.handleClickOpenDialog();
     }
 
-    
     render(){
         return(
         <ValidatorForm onSubmit={this.onSubmitHandler}>
@@ -101,15 +148,36 @@ class StartPage extends Component{
                 <br/><br/><br/>   
 
                 <div id="startPageButtonsContainer">
+
                 <Button  type="submit"  disabled={this.state.isReadyDisabled} variant="contained"  
                     color="primary" size="large" onClick={this.onClickHandler}
-                >join a gameroom
+                >Join a gameroom
                 </Button>
                 <br/><h3>OR</h3>
                 <Button variant="contained" color="primary" size="large"  
                 onClick={()=> this.props.history.push({pathname:"/components/GameRoomPage",state:scale})}
                 >Create gameroom
                 </Button>
+
+                <Dialog open={this.state.isDialogOpen} onClose={this.handleCloseDialog}
+                    TransitionComponent={Transition} aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description" maxWidth='md'keepMounted>
+                    <DialogTitle id="alert-dialog-title"  > </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description"
+                       ref={(dialogcontexttext) => this.DialogContentText = dialogcontexttext} value="empty" >
+                        Players in lobby<br/>
+                       <p id="playersInGameroomText">{this.state.playersInGameroom}</p> 
+                        
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    
+                      <Button onClick={this.handleCloseDialog} autoFocus variant="contained" color="secondary">
+                        Close
+                      </Button>
+                    </DialogActions>
+               </Dialog>
                 <br/><br/>
                
                 </div>

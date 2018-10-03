@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import{scale} from'./../transitions'
 import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Slide from '@material-ui/core/Slide';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import purple from '@material-ui/core/colors/purple';
 import Table from '@material-ui/core/Table';
@@ -8,6 +14,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
+function Transition(props) {
+    return <Slide direction="up" {...props} />;
+}
 const buttonStyle = {
    minWidth:'160px'
   };
@@ -16,19 +26,21 @@ class ScoreboardPage extends Component{
     constructor() {
         super();
         this.state = {
-            playerNamesAndScore: []
+            playerNamesAndScore: [],
+            isRestartDialogOpen:false,
         }
     }
 
     getPlayerNameAndScore = () => {
         var request = require("request");
-
+      
         var options = { method: 'GET',
-        url: 'https://localhost:44343/api/game/4/players/score', 
+        url: `http://10.180.186.100:8080/api/game/${this.props.gameroomId}/players/score`, 
         json: true  };
         request(options, function (error, response, body) {
         if (error) {
-            alert('Refresh')
+            alert('Please go back to the start page.')
+            this.props.history.push({ pathname: "/components/StartPage", state: scale });
         }  else{
             this.setState({
                 playerNamesAndScore:[].concat(body)
@@ -39,7 +51,7 @@ class ScoreboardPage extends Component{
 
     }
     
-    componentWillMount(){
+    componentWillUpdate(){
         this.getPlayerNameAndScore();
     }
 
@@ -47,7 +59,7 @@ class ScoreboardPage extends Component{
         const playersSortedByPoints = this.state.playerNamesAndScore.sort(this.compare);
         return playersSortedByPoints.map((player)=>{
             return (<TableBody>
-                <TableRow>
+                    <TableRow>
                     <TableCell component="th" scope="row">
                     {player.name}
                     </TableCell>
@@ -69,19 +81,24 @@ class ScoreboardPage extends Component{
     }
 
      onClickStatisticsHandler = () => {
-        const playersSortedByPoints = this.state.playerNamesAndScore.sort(this.compare);
-        const highestScorePlayer = playersSortedByPoints[0];
-        const highestScorePlayerName = highestScorePlayer.name +" - "+ highestScorePlayer.score;
-        alert(highestScorePlayerName);    
+        alert(this.props.playerName);    
      }
 
-     
+     handleClose = () => {
+        this.setState({ isRestartDialogOpen: false });
+     };
 
+    
+
+     restartHandler=()=>{
+        this.props.resetPlayerScore();
+        this.props.history.push({ pathname: "/components/QuestionPage", state: scale });
+     }
      onClickRestartHandler = ()=>{
-         var playerNameReady = this.state.playerNamesAndScore[0].name;
-         var gameRoomCode = "74512";
-        
-         alert('The game will restart with the following name ' + playerNameReady + ' in gameroom #' + gameRoomCode + '.');
+        this.setState({
+            isRestartDialogOpen:true,
+        })
+      alert('The game will restart with the following name ' + this.props.playerName + ' in gameroom #' + this.props.gameroomId + '.');
      }
  
     displayScoreboardArrayCheck=()=>{
@@ -99,10 +116,9 @@ class ScoreboardPage extends Component{
         
         return(
             <div>
-                <h1>Gameroom #here</h1>
-                
+                <h1>Gameroom {this.props.gameroomId}</h1>
                 <h2>Final Scoreboard</h2>
-                {this.displayScoreboardArrayCheck()}
+                
                 <div id="scoreboardPageContent">
                 <div id="scoreboardTableContainer">
                 <Table className="table">
@@ -112,10 +128,39 @@ class ScoreboardPage extends Component{
                         <TableCell numeric>Score</TableCell>
                     </TableRow>
                 </TableHead>
+                
                   {this.populatePlayerNameAndScoreList()}
+                  
                 </Table>
-                </div>
-                <br/>  
+                </div>{this.displayScoreboardArrayCheck()}
+                <br/> <br/>
+
+                <Dialog
+                   open={this.state.isRestartDialogOpen}
+                   onClose={this.handleClose}
+                   TransitionComponent={Transition}
+                   aria-labelledby="alert-dialog-title"
+                   aria-describedby="alert-dialog-description1"
+                   maxWidth='md'
+                   keepMounted
+                    >
+                   <DialogTitle id="alert-dialog-title"  > Restart game? </DialogTitle>
+                   <DialogContent>
+                     <DialogContentText id="alert-dialog-description"
+                      ref={(dialogcontexttext) => this.DialogContentText = dialogcontexttext} value="">
+                       The game will restart with the name {this.props.playerName} in gameroom #{this.props.gameroomId}
+                     </DialogContentText>
+                   </DialogContent>
+                   <DialogActions>
+                   <Button onClick={this.handleClose} autoFocus variant="contained" color="secondary">
+                       Close
+                     </Button>
+
+                     <Button onClick={this.restartHandler} autoFocus variant="contained" color="primary">
+                       Restart
+                     </Button>
+                   </DialogActions>
+                </Dialog>
                 <div id="scoreboardButtonsContainer" >
                    <Button  onClick={this.onClickStatisticsHandler} variant="contained" color="primary" style={buttonStyle}
                    >Statistics

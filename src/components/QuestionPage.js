@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import purple from '@material-ui/core/colors/purple';
 
+
 class QuestionPage extends Component{
     constructor() {
         super();
@@ -17,15 +18,16 @@ class QuestionPage extends Component{
             redirectToScoreboard:false,
             correctButtonColor:"primary",
             wrongButtonColor:"primary",
-            playerScore:0,
             timerInfoText:"Time remaining to answer",
+            waitingScreen:true,
         }
+        
     }
 
     getQuestionsFromDB = () => {
         var request = require("request");
         var options = { method: 'GET',
-        url: 'https://localhost:44343/api/game/4/questions', 
+        url: `http://10.180.186.100:8080/api/game/${this.props.gameroomId}/questions`, 
         json: true  };
         request(options, function (error, response, body) {
         if (error) {
@@ -86,14 +88,14 @@ class QuestionPage extends Component{
     }
 
     onClickCorrectAnswerBtnHandler =()=>{ 
-        this.setState((prevState)=>({
+        this.setState({
             correctButtonStyle:"disableAnswer",
             correctButtonColor:"primary",
             wrongButtonColor:"secondary",
             wrongButtonStyle:"disableAnswer",
-            playerScore: prevState.playerScore + 10 * prevState.timeRemaining,
-        }))
-        
+        })
+        this.props.updatePlayerScore(this.props.playerScore,this.state.timeRemaining);
+        //this.props.playerScore: prevState.playerScore + 10 * prevState.timeRemaining,        
     }
 
     onClickWrongAnswerBtnHandler =()=>{
@@ -112,7 +114,6 @@ class QuestionPage extends Component{
             correctButtonColor:"primary",
             wrongButtonColor:"secondary",
             timerInfoText:"Next question in "
-
         })
     }
 
@@ -142,6 +143,8 @@ class QuestionPage extends Component{
                     this.setState({
                         redirectToScoreboard:true
                     })
+                   //send score to server
+                   this.props.postPlayerScoreinDB();
                    this.props.history.push({ pathname: "/components/ScoreboardPage", state: scale });
                 }
                 else {
@@ -161,11 +164,13 @@ class QuestionPage extends Component{
         }, 1000);
     }
 
+   
 
     render(){
-        if(this.state.questions.length===0){
+      
+       if(this.state.questions.length===0){
             return(
-                <div><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                 <div><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                     <CircularProgress  style={{ color: purple[500] }} thickness={6}  size={60} /><br/>
                     <p>Loading questions from server</p>
                 </div>
@@ -175,12 +180,15 @@ class QuestionPage extends Component{
             <div>
                 <h1>Trivia Game</h1>
                 <br/>
-                <p>Your score: {this.state.playerScore}</p>
-                <p id="questionTextParagraph">{this.state.questions[this.state.currentQuestionNr].questionText}</p>
+                <p>Your score: {this.props.playerScore}</p>
                 
-                  <ul>
+                <p id="questionTextParagraph">{this.state.questions[this.state.currentQuestionNr].questionText}</p> 
+
+                <ul>
                     {this.populateQuestions()}
-                  </ul>
+                </ul>
+               
+
                 <br/><br/>
               <p>{this.state.timerInfoText} : {this.state.timeRemaining}</p>
             </div>
