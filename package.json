@@ -6,6 +6,7 @@
     "@material-ui/core": "^3.1.0",
     "@material-ui/icons": "^3.0.1",
     "animated": "^0.2.2",
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "bad-words": "^1.6.3",
     "classnames": "^2.2.6",
     "jest": "^23.5.0",
@@ -32,6 +33,9 @@
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject",
-    "uitest": "testcafe chrome  src/tests/*uitest* --app \"npm start\""    
+    "uitest": "testcafe chrome  src/tests/*uitest* --app \"npm start\""
+  },
+  "devDependencies": {
+    "react-test-renderer": "^16.5.2"
   }
 }
