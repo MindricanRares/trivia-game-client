@@ -51,7 +51,7 @@ class ScoreboardPage extends Component{
 
     }
     
-    componentWillUpdate = () => {
+    componentWillUpdate(){
         this.getPlayerNameAndScore();
     }
 

@@ -30,11 +30,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "jest",
     "eject": "react-scripts eject",
-    "uitest": "testcafe chrome  src/tests/*uitest* --app \"npm start\""
-  },
-  "devDependencies": {
-    "react-test-renderer": "^16.5.2"
+    "uitest": "testcafe chrome  src/tests/*uitest* --app \"npm start\""    
   }
 }
