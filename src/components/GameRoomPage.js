@@ -72,7 +72,7 @@ class GameRoomPage extends Component{
     getAvailableCategories = () => {
         var request = require("request");
         var options = { method: 'GET',
-        url: 'http://10.180.186.100:8080/api/category', 
+        url: 'http://10.180.186.111:8080/api/category', 
         json: true  };
 
         request(options, function (error, response, body) {
@@ -95,7 +95,7 @@ class GameRoomPage extends Component{
         var request = require("request");
 
         var options = { method: 'POST',
-          url: 'http://10.180.186.100:8080/api/categorygame',
+          url: 'http://10.180.186.111:8080/api/categorygame',
           headers: 
            {'Content-Type': 'application/json' },
           body: { gameId: gameId, 
@@ -116,7 +116,7 @@ class GameRoomPage extends Component{
         var request = require("request");
 
         var options = { method: 'POST',
-          url: 'http://10.180.186.100:8080/api/game/',
+          url: 'http://10.180.186.111:8080/api/game/',//http://localhost:49732/api/category
           headers: 
            { 'Content-Type': 'application/json' },
           body: { UniqueKey: gameRoomCode },
@@ -141,7 +141,7 @@ class GameRoomPage extends Component{
     };
     
     handleClose = () => {
-        this.setState({ isRestartDialogOpen: false });
+        this.setState({ isDialogOpen: false });
     };
 
 

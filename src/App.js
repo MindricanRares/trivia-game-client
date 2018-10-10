@@ -26,7 +26,7 @@ class App extends Component{
     var request = require("request");
 
     var options = { method: 'POST',
-      url: 'http://10.180.186.100:8080/api/player/updatescore',
+      url: 'http://10.180.186.111:8080/api/player/updatescore',
       headers: 
        { 'Content-Type': 'application/json' },
       body: { uniqueKey:this.state.gameroomId, 

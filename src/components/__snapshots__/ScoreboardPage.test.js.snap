@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Matches snapshot 1`] = `
+<div>
+  <h1>
+    Gameroom 
+  </h1>
+  <h2>
+    Final Scoreboard
+  </h2>
+  <div
+    id="scoreboardPageContent"
+  >
+    <div
+      id="scoreboardTableContainer"
+    >
+      <WithStyles(Table)
+        className="table"
+      >
+        <WithStyles(TableHead)>
+          <WithStyles(TableRow)>
+            <WithStyles(TableCell)>
+              Name
+            </WithStyles(TableCell)>
+            <WithStyles(TableCell)
+              numeric={true}
+            >
+              Score
+            </WithStyles(TableCell)>
+          </WithStyles(TableRow)>
+        </WithStyles(TableHead)>
+      </WithStyles(Table)>
+    </div>
+    <div>
+      <br />
+      <br />
+      <WithStyles(CircularProgress)
+        size={60}
+        style={
+          Object {
+            "color": "#9c27b0",
+          }
+        }
+        thickness={6}
+      />
+      <p>
+        Loading scoreboard
+      </p>
+      <br />
+      <br />
+    </div>
+    <br />
+     
+    <br />
+    <WithStyles(Dialog)
+      TransitionComponent={[Function]}
+      aria-describedby="alert-dialog-description1"
+      aria-labelledby="alert-dialog-title"
+      keepMounted={true}
+      maxWidth="md"
+      onClose={[Function]}
+      open={false}
+    >
+      <WithStyles(DialogTitle)
+        id="alert-dialog-title"
+      >
+         Restart game? 
+      </WithStyles(DialogTitle)>
+      <WithStyles(DialogContent)>
+        <WithStyles(DialogContentText)
+          id="alert-dialog-description"
+          value=""
+        >
+          The game will restart with the name 
+           in gameroom #
+        </WithStyles(DialogContentText)>
+      </WithStyles(DialogContent)>
+      <WithStyles(DialogActions)>
+        <WithStyles(Button)
+          autoFocus={true}
+          color="secondary"
+          onClick={[Function]}
+          variant="contained"
+        >
+          Close
+        </WithStyles(Button)>
+        <WithStyles(Button)
+          autoFocus={true}
+          color="primary"
+          onClick={[Function]}
+          variant="contained"
+        >
+          Restart
+        </WithStyles(Button)>
+      </WithStyles(DialogActions)>
+    </WithStyles(Dialog)>
+    <div
+      id="scoreboardButtonsContainer"
+    >
+      <WithStyles(Button)
+        color="primary"
+        onClick={[Function]}
+        style={
+          Object {
+            "minWidth": "160px",
+          }
+        }
+        variant="contained"
+      >
+        Statistics
+      </WithStyles(Button)>
+      <br />
+      <br />
+      <WithStyles(Button)
+        color="primary"
+        onClick={[Function]}
+        style={
+          Object {
+            "minWidth": "160px",
+          }
+        }
+        variant="contained"
+      >
+        Restart
+      </WithStyles(Button)>
+      <br />
+      <br />
+      <WithStyles(Button)
+        color="primary"
+        onClick={[Function]}
+        style={
+          Object {
+            "minWidth": "160px",
+          }
+        }
+        variant="contained"
+      >
+        Exit
+      </WithStyles(Button)>
+    </div>
+  </div>
+  <br />
+</div>
+`;

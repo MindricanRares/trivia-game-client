@@ -35,7 +35,7 @@ class ScoreboardPage extends Component{
         var request = require("request");
       
         var options = { method: 'GET',
-        url: `http://10.180.186.100:8080/api/game/${this.props.gameroomId}/players/score`, 
+        url: `http://10.180.186.111:8080/api/game/${this.props.gameroomId}/players/score`, 
         json: true  };
         request(options, function (error, response, body) {
         if (error) {
@@ -51,7 +51,7 @@ class ScoreboardPage extends Component{
 
     }
     
-    componentWillUpdate(){
+    componentWillUpdate = () => {
         this.getPlayerNameAndScore();
     }
 
@@ -98,7 +98,7 @@ class ScoreboardPage extends Component{
         this.setState({
             isRestartDialogOpen:true,
         })
-      alert('The game will restart with the following name ' + this.props.playerName + ' in gameroom #' + this.props.gameroomId + '.');
+   
      }
  
     displayScoreboardArrayCheck=()=>{
@@ -108,6 +108,22 @@ class ScoreboardPage extends Component{
                 <p>Loading scoreboard</p><br/><br/>
             </div>)
         }
+    }
+
+    deleteGameroomPost=()=>{
+        var request = require("request");
+
+        var options = { method: 'DELETE',
+        url: `http://10.180.186.111:8080/api/game/${this.props.gameroomId}`,
+        headers: 
+        { 'Cache-Control': 'no-cache' } };
+
+        request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+
+        console.log(body);
+        },this.props.history.push({pathname:"/components/StartPage",state:scale}),this.props.resetPlayerScore());
+           
     }
    
 
@@ -170,7 +186,7 @@ class ScoreboardPage extends Component{
                    >Restart</Button>
                    <br/><br/>  
                    <Button variant="contained" color="primary"  style={buttonStyle}
-                   onClick={()=> this.props.history.push({pathname:"/components/StartPage",state:scale})}
+                   onClick={this.deleteGameroomPost}
                    >Exit
                    </Button>
                 </div>
@@ -179,7 +195,7 @@ class ScoreboardPage extends Component{
             </div>
         );
     }
-
+//()=> this.props.history.push({pathname:"/components/StartPage",state:scale})
 }
 
 export default ScoreboardPage;

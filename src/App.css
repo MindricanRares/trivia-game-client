@@ -37,7 +37,6 @@ ul {
   display: inline;
   justify-self: center;
   margin: auto;
- 
 }
 
 
@@ -49,6 +48,11 @@ ul {
 }
 
 #playersInGameroomText{
+  font-size: 20px;
+  font-style: bold;
+}
+
+.timerParagraph{
   font-size: 20px;
   font-style: bold;
 }
@@ -70,7 +74,18 @@ line-height:3em;
 .disableAnswer{
   pointer-events: none;
 }
-
+/*----------------------------------------*/
+.helpDiv{
+  display:flex;
+  float: right;
+  padding-right: 1%;
+  
+}
+#helpButton{
+  position: fixed;
+  bottom: 1%;
+  right: 1%;
+}
 
 
 /*--------------------------------------------------*/

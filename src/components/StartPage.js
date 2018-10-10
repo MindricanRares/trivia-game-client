@@ -9,6 +9,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
+import IconButton from '@material-ui/core/IconButton';
+import InfoIcon from '@material-ui/icons/Info'
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -23,9 +25,20 @@ class StartPage extends Component{
             code: '',
             isReadyDisabled:false,
             isDialogOpen: false,
-            playersInGameroom:1, 
+            playersInGameroom:1,
+            openHelp: false,
+            scroll: "paper" ,
         }
     }
+
+    handleClickOpenHelp = scroll => () => {
+        this.setState({ openHelp: true, scroll });
+      };
+    
+      handleCloseHelp = () => {
+        this.setState({ openHelp: false });
+      };
+    
 
     handleClickOpenDialog = () => {
         this.setState({ isDialogOpen: true });
@@ -34,6 +47,7 @@ class StartPage extends Component{
       handleCloseDialog = () => {
         this.setState({ isDialogOpen: false });
     };
+    
 
     componentWillMount(){
         ValidatorForm.addValidationRule('isProfanity',(profaneWord)=>{
@@ -52,7 +66,7 @@ class StartPage extends Component{
             if (this.state.playersInGameroom < 2) {
               this.getNumberOfPlayersInGameroom();
               
-            }
+            }//add function in the if below to start game at a set number of players.
             else if(this.state.playersInGameroom >=2){
               clearInterval(playersCheck);
               this.handleCloseDialog();
@@ -66,7 +80,7 @@ class StartPage extends Component{
         var request = require("request");
 
         var options = { method: 'GET',
-          url: `http://10.180.186.100:8080/api/game/${this.state.code}/players/number`,
+          url: `http://10.180.186.111:8080/api/game/${this.state.code}/players/number`,
           headers: 
            { 'Content-Type': 'application/json' } 
         };
@@ -88,7 +102,7 @@ class StartPage extends Component{
         var request = require("request");
 
         var options = { method: 'POST',
-          url: 'http://10.180.186.100:8080/api/player',
+          url: 'http://10.180.186.111:8080/api/player',
           headers: 
            { 'Content-Type': 'application/json' },
           body: {
@@ -126,6 +140,7 @@ class StartPage extends Component{
          })
       this.handleClickOpenDialog();
     }
+
 
     render(){
         return(
@@ -178,9 +193,50 @@ class StartPage extends Component{
                       </Button>
                     </DialogActions>
                </Dialog>
-                <br/><br/>
-               
-                </div>
+               <br/>
+               <div className="helpDiv">
+               <IconButton aria-label="Info"  color="secondary" id="helpButton" >
+                  <InfoIcon fontSize="large" onClick={this.handleClickOpenHelp("paper")} />
+                </IconButton>
+                <Dialog
+                     open={this.state.openHelp}
+                     onClose={this.handleCloseHelp}
+                     scroll={this.state.scroll}
+                     aria-labelledby="scroll-dialog-title"
+                >
+                <DialogTitle id="scroll-dialog-title">Help</DialogTitle>
+                <DialogContent>
+                <DialogContentText align="left">
+                 1.If you or one of your friends already created a gameroom,simply
+                  fill in the required fields and click on "Join gameroom".
+                 <br/>
+                 <br/>
+                 2.If you don't have a gameroom code,click on "Create a
+                 gameroom" and create one yourself by selecting the categories you
+                  wish.
+                 <br/>
+                 <br/>
+                 3.After you connected to a gameroom,a series of 10 questions
+                 will appear succesively, each question has 4 possible answers of
+                 which only one is correct.
+                 <br/>
+                 <br/>
+                 4.The faster you answer a question,the more points you get.
+                 <br/>
+                 <br/>
+                 5.If one or more of the players in the same gameroom press Exit at
+                  the end of the game,the gameroom will be deleted and a new one has
+                   to be created.
+               </DialogContentText>
+               </DialogContent>
+               <DialogActions>
+                   <Button onClick={this.handleCloseHelp} color="primary">
+                        Close
+                   </Button>
+                  </DialogActions>
+              </Dialog>
+               </div>
+             </div>
             </ValidatorForm>
         );
     }

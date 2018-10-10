@@ -13,12 +13,14 @@ class QuestionPage extends Component{
             currentQuestionNr: 0,
             wrongButtonStyle:"",
             correctButtonStyle:"",
-            timeRemaining: 5,
+
+            timeRemaining: 20,
+            timerInfoText:"Time remaining to answer",
+
             questionAnswers:[],
             redirectToScoreboard:false,
             correctButtonColor:"primary",
             wrongButtonColor:"primary",
-            timerInfoText:"Time remaining to answer",
             waitingScreen:true,
         }
         
@@ -27,7 +29,7 @@ class QuestionPage extends Component{
     getQuestionsFromDB = () => {
         var request = require("request");
         var options = { method: 'GET',
-        url: `http://10.180.186.100:8080/api/game/${this.props.gameroomId}/questions`, 
+        url: `http://10.180.186.111:8080/api/game/${this.props.gameroomId}/questions`, 
         json: true  };
         request(options, function (error, response, body) {
         if (error) {
@@ -94,7 +96,7 @@ class QuestionPage extends Component{
             wrongButtonColor:"secondary",
             wrongButtonStyle:"disableAnswer",
         })
-        this.props.updatePlayerScore(this.props.playerScore,this.state.timeRemaining);
+        this.props.updatePlayerScore(this.props.playerScore,this.state.timeRemaining-5);
         //this.props.playerScore: prevState.playerScore + 10 * prevState.timeRemaining,        
     }
 
@@ -134,7 +136,7 @@ class QuestionPage extends Component{
             this.setState((prevState) => ({
                 timeRemaining: prevState.timeRemaining-1
               }));
-            if(this.state.timeRemaining<=2){
+            if(this.state.timeRemaining<=5){
                 this.revealAnswersHandler();
             }
             if (this.state.timeRemaining <= 0) {
@@ -152,7 +154,7 @@ class QuestionPage extends Component{
                 this.setState((prevState) => ({
                     currentQuestionNr: prevState.currentQuestionNr+1,
                     timerInfoText:"Time remaining to answer",
-                    timeRemaining : 5  ,
+                    timeRemaining : 20  ,
                     questionAnswers:this.createAnswersArray()
                   }),()=>{
                     this.setState({
@@ -190,7 +192,8 @@ class QuestionPage extends Component{
                
 
                 <br/><br/>
-              <p>{this.state.timerInfoText} : {this.state.timeRemaining}</p>
+            {this.state.timerInfoText === "Time remaining to answer" ? <p className="timerParagraph">{this.state.timerInfoText} : {this.state.timeRemaining-5}</p>:<p className="timerParagraph">{this.state.timerInfoText} : {this.state.timeRemaining}</p>}
+              {/* <p className="timerParagraph">{this.state.timerInfoText} : {this.state.timeRemaining-5}</p> */}
             </div>
         );
     }
