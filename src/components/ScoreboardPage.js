@@ -116,7 +116,7 @@ class ScoreboardPage extends Component{
         var options = { method: 'DELETE',
         url: `http://10.180.186.111:8080/api/game/${this.props.gameroomId}`,
         headers: 
-        { 'Cache-Control': 'no-cache' } };
+        {  } };
 
         request(options, function (error, response, body) {
         if (error) throw new Error(error);

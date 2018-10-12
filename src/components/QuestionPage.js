@@ -136,7 +136,7 @@ class QuestionPage extends Component{
             this.setState((prevState) => ({
                 timeRemaining: prevState.timeRemaining-1
               }));
-            if(this.state.timeRemaining<=5){
+            if(this.state.timeRemaining <= 5){
                 this.revealAnswersHandler();
             }
             if (this.state.timeRemaining <= 0) {

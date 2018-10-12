@@ -63,11 +63,11 @@ class StartPage extends Component{
 
     checkGameroomIntervalFunction=()=>{
         var playersCheck = setInterval(() => {
-            if (this.state.playersInGameroom < 2) {
+            if (this.state.playersInGameroom < 4) {
               this.getNumberOfPlayersInGameroom();
               
             }//add function in the if below to start game at a set number of players.
-            else if(this.state.playersInGameroom >=2){
+            else if(this.state.playersInGameroom >= 4){
               clearInterval(playersCheck);
               this.handleCloseDialog();
               this.props.history.push({ pathname: "/components/QuestionPage", state: scale });
@@ -87,7 +87,7 @@ class StartPage extends Component{
         
         request(options, function (error, response, body) {
           if (error) {
-            alert('Refresh numberofplayers')
+            alert('Refresh number of players')
           }else{
               this.setState({
                   playersInGameroom:body
